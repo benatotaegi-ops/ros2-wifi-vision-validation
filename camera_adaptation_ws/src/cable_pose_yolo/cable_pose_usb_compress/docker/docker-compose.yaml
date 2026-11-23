@@ -1,0 +1,23 @@
+services:
+  cable_pose_yolo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: docker-cable_pose_yolo
+    container_name: cable_pose_yolo
+    network_mode: "host"
+    ipc: "host"
+    privileged: true
+    environment:
+      - ROS_DOMAIN_ID=87
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - CAMERA_ADAPTATION_WS_DIR=/app/camera_adaptation_ws
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./config/cyclone_dds_config.xml:/root/cyclone_dds_config.xml
+      - ./config/entrypoint.bash:/app/camera_adaptation_ws/entrypoint.bash
+      - ./config/cables_params.yaml:/app/camera_adaptation_ws/src/cable_pose_yolo/cable_pose_usb_compress/config/cables_params.yaml
+      - ~/projects/camera_adaptation/camera_adaptation_ws:/app/camera_adaptation_ws
+    command: ["/bin/bash", "-c", "export CAMERA_ADAPTATION_WS_DIR=/app/camera_adaptation_ws && bash /app/camera_adaptation_ws/entrypoint.bash"]
